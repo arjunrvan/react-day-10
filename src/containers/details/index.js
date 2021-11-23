@@ -1,42 +1,26 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Image, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { movieDetailsSearch } from "../../actions";
 import * as styles from '../../assets/styles';
 
 function Details(props) {
     const {ID} = props.route.params;
-    const [movieData,setMovieData] = useState({Title:'Hello'}); 
 
-    useEffect(() => {
-        try {
-            axios.get(`https://www.omdbapi.com/?apikey=85872d3a&i=${ID}`)
-            .then(res => {
-                console.log('res',res);
-                setMovieData(res.data);
-                
-        })
-        .catch(error => console.log('Error',error))
-        } catch (error) {
-            console.log('Error',error);
-        }
-        console.log('movieData',movieData);
-    },{});
+    const movieDetails = useSelector(state => state.movieDetails);
+    const dispatch = useDispatch();
+    dispatch(movieDetailsSearch(ID));
 
     return (
         <SafeAreaView>
             <ScrollView showsVerticalScrollIndicator={false} >
-    
                 <View style = {styles.CONTAINER_STYLE}>
-                    <Image style={styles.IMAGE_STYLE} source = {{uri:movieData.Poster,}}/>
-                    <Text><b>{movieData.Title}</b></Text><br/><br/>
-                    <Text>Plot: {movieData.Plot}</Text><br/><br/>
-                    <Text>Actors: {movieData.Actors}</Text><br/><br/>
-                    <Text>Director: {movieData.Director}</Text><br/><br/>
+                    <Image style={styles.IMAGE_STYLE} source = {{uri:movieDetails.Poster,}}/>
+                    <Text><b>{movieDetails.Title}</b></Text><br/><br/>
+                    <Text>Plot: {movieDetails.Plot}</Text><br/><br/>
+                    <Text>Actors: {movieDetails.Actors}</Text><br/><br/>
+                    <Text>Director: {movieDetails.Director}</Text><br/><br/>
                 </View>
-                    
-                    
-                
-                
             </ScrollView>
         </SafeAreaView>
     )

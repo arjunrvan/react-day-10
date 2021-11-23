@@ -1,32 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, Text, ScrollView, View, TouchableOpacity, Image } from "react-native";
-import axios from "axios";
+import { SafeAreaView, Text, ScrollView, View, TouchableOpacity, Image, TextInput, FlatList } from "react-native";
 import * as styles from '../../assets/styles';
-
-
-
-// const DATA = ["Data 1", "Data 2", "Data 3", "Data 4" ];
+import { useDispatch, useSelector } from "react-redux";
+import { movieSearch } from "../../actions";
 
 function Home(props) {
 
-    const [movieData,setMovieData]=useState([{Title:'Hello'}]);
+    const [search,setSearch]=useState('');
+
+    const dispatch = useDispatch();
+    const movieData  =  useSelector(state => state.movie);
 
 
     useEffect(() => {
-        try {
-            axios.get("https://www.omdbapi.com/?apikey=85872d3a&s=Batman&page=1")
-            .then(res => {
-                console.log('res',res);
-                setMovieData(res.data.Search);
-        })
-        .catch(error => console.log('Error',error))
-        } catch (error) {
-            console.log('Error',error);
-        }
+        dispatch(movieSearch('Batman'));       
         
     },[]);
 
     function _renderListView(data) {
+        console.log('data', data);
         return (
             <View style={styles.CARD_STYLE}>
                 <Text><b>{data.Title}</b></Text>
@@ -39,14 +31,26 @@ function Home(props) {
             </View>
         )
     }
+
     return (
         <SafeAreaView style={{flex:1}}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <Text>Home Page</Text>
-                {
-                    movieData.map(list => 
-                    _renderListView(list))
-                }
+                <TextInput 
+                    onChangeText = {(term) => setSearch(term)}
+                    placeholder = 'Search Movies'
+                />
+                <TouchableOpacity style={styles.BUTTON_STYLE} onPress={() => dispatch(movieSearch(search))}>
+                    <Text>Enter</Text>
+                </TouchableOpacity>
+                {console.log('movieData', movieData)}
+                <FlatList
+                    data={movieData}
+                    renderItem = {({item}) => _renderListView(item)}
+                    ListEmptyComponent = {() => (
+                        <Text>No data now...</Text>
+                    )}
+                />
             </ScrollView>
         </SafeAreaView>
     )
